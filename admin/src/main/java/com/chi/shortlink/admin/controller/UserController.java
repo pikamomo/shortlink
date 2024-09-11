@@ -1,5 +1,6 @@
 package com.chi.shortlink.admin.controller;
 
+import com.chi.shortlink.admin.common.convention.result.Result;
 import com.chi.shortlink.admin.dto.resp.UserRespDTO;
 import com.chi.shortlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class UserController {
      * get user by username
      */
     @GetMapping("/api/shortlink/v1/user/{username}")
-    public UserRespDTO getUserByUsername(@PathVariable String username){
-        return userService.getUserByUsername(username);
+    public Result<UserRespDTO> getUserByUsername(@PathVariable String username){
+        return new Result<UserRespDTO>().setCode("0").setData(userService.getUserByUsername(username));
     }
 }
