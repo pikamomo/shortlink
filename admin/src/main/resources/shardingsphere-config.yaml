@@ -24,5 +24,33 @@ rules:
         type: HASH_MOD
         props:
           sharding-count: 16
+  # Data Encryption Storage Rules
+  - !ENCRYPT
+    # Set of tables requiring encryption
+    tables:
+      # User table
+      t_user:
+        # Columns in the user table that need to be encrypted
+        columns:
+          # Phone number field, a logical field, may not physically exist in the database
+          phone:
+            # Encrypted field for phone number, this is the actual field in the database
+            cipherColumn: phone
+            # Encryption algorithm for the phone number field
+            encryptorName: common_encryptor
+          mail:
+            cipherColumn: mail
+            encryptorName: common_encryptor
+        # Whether to query by the encrypted field
+        queryWithCipherColumn: true
+    # Encryption algorithms
+    encryptors:
+      # Custom encryption algorithm name
+      common_encryptor:
+        # Type of encryption algorithm
+        type: AES
+        props:
+          # AES encryption key
+          aes-key-value: d6oadClrrb9A3GWo
 props:
   sql-show: true
