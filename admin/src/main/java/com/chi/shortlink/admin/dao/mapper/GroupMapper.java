@@ -6,5 +6,6 @@ import com.chi.shortlink.admin.dao.entity.GroupDO;
 /**
  * short link group Persistence Layer
  */
-public interface GroupMapper  extends BaseMapper<GroupDO> {
+public interface GroupMapper extends BaseMapper<GroupDO> {
+
 }
