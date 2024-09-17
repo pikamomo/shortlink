@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * user information filter
@@ -20,20 +21,23 @@ public class UserTransmitFilter implements Filter {
 
     private static final List<String> ignore_URI = Lists.newArrayList(
             "/api/short-link/admin/v1/user/login",
-            "/api/short-link/v1/user/has-username",
-            "/api/short-link/v1/user/login"
+            "/api/short-link/v1/user/has-username"
     );
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String username = httpServletRequest.getHeader("username");
-        String token = httpServletRequest.getHeader("token");
-        Object userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + username, token);
-        if (userInfoJsonStr != null) {
-            UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
-            UserContext.setUser(userInfoDTO);
+        String requestURI = httpServletRequest.getRequestURI();
+        if (!Objects.equals(requestURI, "/api/short-link/v1/user/login")) {
+            String username = httpServletRequest.getHeader("username");
+            String token = httpServletRequest.getHeader("token");
+            Object userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + username, token);
+            if (userInfoJsonStr != null) {
+                UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
+                UserContext.setUser(userInfoDTO);
+            }
         }
+
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
