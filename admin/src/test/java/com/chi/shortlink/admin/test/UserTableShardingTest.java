@@ -9,6 +9,7 @@ public class UserTableShardingTest {
             "  `origin_url` varchar(1024) DEFAULT NULL COMMENT 'origin_url',\n" +
             "  `click_num` int(11) DEFAULT '0' COMMENT 'click_num',\n" +
             "  `gid` varchar(32) DEFAULT NULL COMMENT 'group id',\n" +
+            "  `favicon` varchar(256) DEFAULT NULL COMMENT 'favicon url',\n" +
             "  `enable_status` tinyint(1) DEFAULT NULL COMMENT 'valid 0：valid 1：not valid',\n" +
             "  `created_type` tinyint(1) DEFAULT NULL COMMENT 'create type 0：interface 1：console',\n" +
             "  `valid_date_type` tinyint(1) DEFAULT NULL COMMENT 'due time 0：premanent 1：custom',\n" +
@@ -19,7 +20,7 @@ public class UserTableShardingTest {
             "  `del_flag` tinyint(1) DEFAULT NULL COMMENT 'del flag 0：not del 1：del',\n" +
             "  PRIMARY KEY (`id`),\n" +
             "  UNIQUE KEY `idx_unique_full_short_url` (`full_short_url`) USING BTREE\n" +
-            ") ENGINE=InnoDB AUTO_INCREMENT=1837695196341055491 DEFAULT CHARSET=utf8mb4;";
+            ") ENGINE=InnoDB AUTO_INCREMENT=1837703808471810050 DEFAULT CHARSET=utf8mb4;";
     public static void main(String[] args) {
         for (int i = 0; i < 16; i++) {
             System.out.printf((SQL) + "%n", i);
