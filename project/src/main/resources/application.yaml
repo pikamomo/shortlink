@@ -6,7 +6,7 @@ spring:
     # ShardingSphere Driver
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
     # ShardingSphere Configuration
-    url: jdbc:shardingsphere:classpath:shardingsphere-config.yaml
+    url: jdbc:shardingsphere:classpath:shardingsphere-config-${database.env:dev}.yaml
   data:
     redis:
       host: 192.168.150.200

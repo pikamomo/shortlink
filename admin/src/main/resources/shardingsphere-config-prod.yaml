@@ -1,0 +1,56 @@
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://192.168.150.200:3306/link?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+rules:
+  - !SHARDING
+    tables:
+      t_user:
+        # real node
+        actualDataNodes: ds_0.t_user_${0..15}
+        # Sharding Strategy
+        tableStrategy:
+          standard:
+            # key
+            shardingColumn: username
+            # sharding Algorithms
+            shardingAlgorithmName: user_table_hash_mod
+    shardingAlgorithms:
+      user_table_hash_mod:
+        type: HASH_MOD
+        props:
+          sharding-count: 16
+  # Data Encryption Storage Rules
+  - !ENCRYPT
+    # Set of tables requiring encryption
+    tables:
+      # User table
+      t_user:
+        # Columns in the user table that need to be encrypted
+        columns:
+          # Phone number field, a logical field, may not physically exist in the database
+          phone:
+            # Encrypted field for phone number, this is the actual field in the database
+            cipherColumn: phone
+            # Encryption algorithm for the phone number field
+            encryptorName: common_encryptor
+          mail:
+            cipherColumn: mail
+            encryptorName: common_encryptor
+        # Whether to query by the encrypted field
+        queryWithCipherColumn: true
+    # Encryption algorithms
+    encryptors:
+      # Custom encryption algorithm name
+      common_encryptor:
+        # Type of encryption algorithm
+        type: AES
+        props:
+          # AES encryption key
+          aes-key-value: d6oadClrrb9A3GWo
+props:
+  sql-show: true
