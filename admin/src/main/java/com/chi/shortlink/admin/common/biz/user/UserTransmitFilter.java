@@ -63,6 +63,7 @@ public class UserTransmitFilter implements Filter {
         }
 
         try {
+            System.out.println(((HttpServletRequest) servletRequest).getHeader("username"));
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             UserContext.removeUser();
