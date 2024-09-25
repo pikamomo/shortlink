@@ -15,11 +15,6 @@ public class ShortLinkGroupRespDTO {
     private String name;
 
     /**
-     * group username
-     */
-    private String username;
-
-    /**
      * group sort
      */
     private Integer sortOrder;
