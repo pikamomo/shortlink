@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.chi.shortlink.project.dao.entity.ShortLinkDO;
 import com.chi.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.chi.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.chi.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.chi.shortlink.project.dto.resp.ShortLinkPageRespDTO;
+
+import java.util.List;
 
 public interface ShortLinkService extends IService<ShortLinkDO> {
     /**
@@ -21,4 +24,11 @@ public interface ShortLinkService extends IService<ShortLinkDO> {
      * @return pagination result
      */
     IPage<ShortLinkPageRespDTO> pageShortLink(ShortLinkPageReqDTO requestParam);
+
+    /**
+     * list group short link count
+     * @param requestParam gid list
+     * @return
+     */
+    List<ShortLinkGroupCountQueryRespDTO> listGroupShortLinkCount(List<String> requestParam);
 }

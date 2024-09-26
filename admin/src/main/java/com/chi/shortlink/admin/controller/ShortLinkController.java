@@ -2,7 +2,7 @@ package com.chi.shortlink.admin.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.chi.shortlink.admin.common.convention.result.Result;
-import com.chi.shortlink.admin.remote.dto.ShortLinkRemoteService;
+import com.chi.shortlink.admin.remote.ShortLinkRemoteService;
 import com.chi.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.chi.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.chi.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
@@ -35,5 +35,6 @@ public class ShortLinkController {
     public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
         return shortLinkRemoteService.pageShortLink(requestParam);
     }
+
 
 }
