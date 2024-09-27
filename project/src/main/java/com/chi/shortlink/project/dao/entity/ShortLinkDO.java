@@ -55,6 +55,10 @@ public class ShortLinkDO extends BaseDO {
     private String gid;
 
     /**
+     * favicon
+     */
+    private String favicon;
+    /**
      * valid 0：valid 1：not valid
      */
     private Integer enableStatus;
