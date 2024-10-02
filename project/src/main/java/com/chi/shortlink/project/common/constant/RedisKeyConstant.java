@@ -14,4 +14,9 @@ public class RedisKeyConstant {
      * shot link redirect lock
      */
     public static final String LOCK_GOTO_SHORT_LINK_KEY = "short-link_lock_goto_%s";
+
+    /**
+     * shot link null redirect
+     */
+    public static final String GOTO_IS_NULL_SHORT_LINK_KEY = "short-link_is-null_goto_%s";
 }
