@@ -24,6 +24,7 @@ import com.chi.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.chi.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.chi.shortlink.project.service.ShortLinkService;
 import com.chi.shortlink.project.toolkit.HashUtil;
+import com.chi.shortlink.project.toolkit.LinkUtil;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -93,6 +94,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 throw new ServiceException("short link dupicate");
             }
         }
+        stringRedisTemplate.opsForValue().set(fullShortUrl, requestParam.getOriginUrl(), LinkUtil.getLinkCacheValidDate(requestParam.getValidDate()), TimeUnit.MILLISECONDS);
         shortUriCreateCachePenetrationBloomFilter.add(fullShortUrl);
         return ShortLinkCreateRespDTO.builder()
                 .fullShortUrl("http://" + shortLinkDO.getFullShortUrl())
