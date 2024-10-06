@@ -11,4 +11,5 @@ import com.chi.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 public interface RecycleBinService {
 
     Result<IPage<ShortLinkPageRespDTO>> pageRecycleBinShortLink(ShortLinkRecycleBinPageReqDTO requestParam);
+
 }
