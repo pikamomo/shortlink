@@ -16,3 +16,7 @@ spring:
     view:
       prefix: /templates/
       suffix: .html
+short-link:
+  stats:
+    locale:
+      amap-key: 00todo
