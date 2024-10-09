@@ -7,9 +7,6 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -20,13 +17,10 @@ import com.chi.shortlink.project.common.convention.exception.ClientException;
 import com.chi.shortlink.project.common.convention.exception.ServiceException;
 import com.chi.shortlink.project.common.enums.ValidDateTypeEnum;
 import com.chi.shortlink.project.dao.entity.LinkAccessStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkLocaleStatsDO;
+import com.chi.shortlink.project.dao.entity.LinkOsStatsDO;
 import com.chi.shortlink.project.dao.entity.ShortLinkDO;
 import com.chi.shortlink.project.dao.entity.ShortLinkGotoDO;
-import com.chi.shortlink.project.dao.mapper.LinkAccessStatsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkLocaleStatsMapper;
-import com.chi.shortlink.project.dao.mapper.ShortLinkGotoMapper;
-import com.chi.shortlink.project.dao.mapper.ShortLinkMapper;
+import com.chi.shortlink.project.dao.mapper.*;
 import com.chi.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.chi.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.chi.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
@@ -63,7 +57,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.chi.shortlink.project.common.constant.RedisKeyConstant.*;
-import static com.chi.shortlink.project.common.constant.ShortLinkConstant.AMAP_REMOTE_URL;
 
 /**
  * short link interface implement
@@ -79,6 +72,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final RedissonClient redissonClient;
     private final LinkAccessStatsMapper linkAccessStatsMapper;
     private final LinkLocaleStatsMapper linkLocaleStatsMapper;
+    private final LinkOsStatsMapper linkOsStatsMapper;
 
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
@@ -315,30 +309,37 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .date(new Date())
                     .build();
             linkAccessStatsMapper.shortLinkStats(linkAccessStatsDO);
-            Map<String, Object> localeParamMap = new HashMap<>();
-            localeParamMap.put("key", statsLocaleAmapKey);
-            localeParamMap.put("ip", remoteAddr);
-            String localeResultStr = HttpUtil.get(AMAP_REMOTE_URL, localeParamMap);
-            JSONObject localeResultObj = JSON.parseObject(localeResultStr);
-            String infocode = localeResultObj.getString("infocode");
-            if (StrUtil.isNotBlank(infocode) && StrUtil.equals(infocode, "10000")) {
-                String province = localeResultObj.getString("province");
-                boolean unknownFlag = StrUtil.isBlank(province);
-                LinkLocaleStatsDO linkLocaleStatsDO = LinkLocaleStatsDO.builder()
-                        .fullShortUrl(fullShortUrl)
-                        .province(unknownFlag ? "unknown" : province)
-                        .city(unknownFlag ? "unknown" : localeResultObj.getString("city"))
-                        .adcode(unknownFlag ? "unknown" : localeResultObj.getString("adcode"))
-                        .cnt(1)
-                        .fullShortUrl(fullShortUrl)
-                        .country("CN")
-                        .gid(gid)
-                        .date(new Date())
-                        .build();
-                LinkLocaleStatsMapper.shortLinkLocalStats(linkLocaleStatsDO);
-            }
-
-
+            // record short link region monitor stats
+//            Map<String, Object> localeParamMap = new HashMap<>();
+//            localeParamMap.put("key", statsLocaleAmapKey);
+//            localeParamMap.put("ip", remoteAddr);
+//            String localeResultStr = HttpUtil.get(AMAP_REMOTE_URL, localeParamMap);
+//            JSONObject localeResultObj = JSON.parseObject(localeResultStr);
+//            String infocode = localeResultObj.getString("infocode");
+//            if (StrUtil.isNotBlank(infocode) && StrUtil.equals(infocode, "10000")) {
+//                String province = localeResultObj.getString("province");
+//                boolean unknownFlag = StrUtil.isBlank(province);
+//                LinkLocaleStatsDO linkLocaleStatsDO = LinkLocaleStatsDO.builder()
+//                        .fullShortUrl(fullShortUrl)
+//                        .province(unknownFlag ? "unknown" : province)
+//                        .city(unknownFlag ? "unknown" : localeResultObj.getString("city"))
+//                        .adcode(unknownFlag ? "unknown" : localeResultObj.getString("adcode"))
+//                        .cnt(1)
+//                        .fullShortUrl(fullShortUrl)
+//                        .country("CN")
+//                        .gid(gid)
+//                        .date(new Date())
+//                        .build();
+//                LinkLocaleStatsMapper.shortLinkLocalStats(linkLocaleStatsDO);
+//            }
+            LinkOsStatsDO linkOsStatsDO = LinkOsStatsDO.builder()
+                    .os(LinkUtil.getOs((HttpServletRequest) request))
+                    .cnt(1)
+                    .fullShortUrl(fullShortUrl)
+                    .gid(gid)
+                    .date(new Date())
+                    .build();
+            linkOsStatsMapper.shortLinkOsStats(linkOsStatsDO);
         } catch (Exception ex) {
             log.error("record short link monitor stats error", ex);
         }
