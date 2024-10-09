@@ -73,8 +73,8 @@ public class LinkUtil {
     /**
      * get request browser
      *
-     * @param request 请求
-     * @return 访问浏览器
+     * @param request
+     * @return
      */
     public static String getBrowser(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
@@ -93,5 +93,13 @@ public class LinkUtil {
         } else {
             return "Unknown";
         }
+    }
+
+    public static String getDevice(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent.toLowerCase().contains("mobile")) {
+            return "Mobile";
+        }
+        return "PC";
     }
 }
