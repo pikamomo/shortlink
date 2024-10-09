@@ -16,10 +16,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chi.shortlink.project.common.convention.exception.ClientException;
 import com.chi.shortlink.project.common.convention.exception.ServiceException;
 import com.chi.shortlink.project.common.enums.ValidDateTypeEnum;
-import com.chi.shortlink.project.dao.entity.LinkAccessStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkOsStatsDO;
-import com.chi.shortlink.project.dao.entity.ShortLinkDO;
-import com.chi.shortlink.project.dao.entity.ShortLinkGotoDO;
+import com.chi.shortlink.project.dao.entity.*;
 import com.chi.shortlink.project.dao.mapper.*;
 import com.chi.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.chi.shortlink.project.dto.req.ShortLinkPageReqDTO;
@@ -73,6 +70,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final LinkAccessStatsMapper linkAccessStatsMapper;
     private final LinkLocaleStatsMapper linkLocaleStatsMapper;
     private final LinkOsStatsMapper linkOsStatsMapper;
+    private final LinkBrowserStatsMapper linkBrowserStatsMapper;
 
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
@@ -340,6 +338,14 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .date(new Date())
                     .build();
             linkOsStatsMapper.shortLinkOsStats(linkOsStatsDO);
+            LinkBrowserStatsDO linkBrowserStatsDO = LinkBrowserStatsDO.builder()
+                    .browser(LinkUtil.getBrowser(((HttpServletRequest) request)))
+                    .cnt(1)
+                    .gid(gid)
+                    .fullShortUrl(fullShortUrl)
+                    .date(new Date())
+                    .build();
+            linkBrowserStatsMapper.shortLinkBrowserState(linkBrowserStatsDO);
         } catch (Exception ex) {
             log.error("record short link monitor stats error", ex);
         }
