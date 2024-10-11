@@ -1,5 +1,6 @@
 package com.chi.shortlink.admin.remote;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -10,10 +11,12 @@ import com.chi.shortlink.admin.dto.req.RecycleBinSaveReqDTO;
 import com.chi.shortlink.admin.dto.req.ShortLinkRecycleBinPageReqDTO;
 import com.chi.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.chi.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
+import com.chi.shortlink.admin.remote.dto.req.ShortLinkStatsReqDTO;
 import com.chi.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
 import com.chi.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
 import com.chi.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.chi.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
+import com.chi.shortlink.admin.remote.dto.resp.ShortLinkStatsRespDTO;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
@@ -108,5 +111,15 @@ public interface ShortLinkRemoteService {
      */
     default void removeRecycleBin(RecycleBinRecoverReqDTO requestParam) {
         HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/recycle-bin/remove", JSON.toJSONString(requestParam));
+    }
+    /**
+     * get single short link stats in specified date
+     * @param requestParam
+     * @return
+     */
+    default Result<ShortLinkStatsRespDTO> oneShortLinkStats(ShortLinkStatsReqDTO requestParam) {
+        String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats", BeanUtil.beanToMap(requestParam));
+        return JSON.parseObject(resultBodyStr, new TypeReference<>() {
+        });
     }
 }

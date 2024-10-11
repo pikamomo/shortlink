@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TLinkAccessLogsDO extends BaseDO {
+public class LinkAccessLogsDO extends BaseDO {
     /**
      * id
      */
