@@ -16,7 +16,7 @@ public class ShortLinkStatsController {
     };
 
     /**
-     * get short link stats
+     * get short link stat
      */
     @GetMapping("/api/short-link/admin/v1/stats")
     public Result<ShortLinkStatsRespDTO> shortLinkStats(ShortLinkStatsReqDTO requestParam) {
