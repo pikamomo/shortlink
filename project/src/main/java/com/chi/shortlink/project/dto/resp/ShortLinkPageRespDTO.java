@@ -66,4 +66,16 @@ public class ShortLinkPageRespDTO {
      * favicon
      */
     private String favicon;
+
+    private Integer totalPv;
+
+    private Integer todayPv;
+
+    private Integer totalUv;
+
+    private Integer todayUv;
+
+    private Integer totalUip;
+
+    private Integer todayUip;
 }
