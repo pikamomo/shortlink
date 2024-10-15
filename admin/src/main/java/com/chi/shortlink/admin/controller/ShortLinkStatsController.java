@@ -22,5 +22,16 @@ public class ShortLinkStatsController {
     public Result<ShortLinkStatsRespDTO> shortLinkStats(ShortLinkStatsReqDTO requestParam) {
         return shortLinkRemoteService.oneShortLinkStats(requestParam);
     }
+
+
+//    /**
+//     * short link stats access record in a period
+//     * @param requestParam
+//     * @return
+//     */
+//    @GetMapping("/api/short-link/admin/v1/stats/access-record")
+//    public Result<IPage<ShortLinkStatsAccessRecordRespDTO>> ShortLinkStatsAccessRecord(ShortLinkStatsAccessRecordReqDTO requestParam) {
+//        return shortLinkRemoteService.shortLinkStatsAccessRecord(requestParam);
+//    }
 }
 

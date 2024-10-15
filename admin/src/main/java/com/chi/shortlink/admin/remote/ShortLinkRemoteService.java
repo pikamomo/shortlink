@@ -9,14 +9,8 @@ import com.chi.shortlink.admin.common.convention.result.Result;
 import com.chi.shortlink.admin.dto.req.RecycleBinRecoverReqDTO;
 import com.chi.shortlink.admin.dto.req.RecycleBinSaveReqDTO;
 import com.chi.shortlink.admin.dto.req.ShortLinkRecycleBinPageReqDTO;
-import com.chi.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
-import com.chi.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
-import com.chi.shortlink.admin.remote.dto.req.ShortLinkStatsReqDTO;
-import com.chi.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
-import com.chi.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
-import com.chi.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
-import com.chi.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
-import com.chi.shortlink.admin.remote.dto.resp.ShortLinkStatsRespDTO;
+import com.chi.shortlink.admin.remote.dto.req.*;
+import com.chi.shortlink.admin.remote.dto.resp.*;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
@@ -119,6 +113,15 @@ public interface ShortLinkRemoteService {
      */
     default Result<ShortLinkStatsRespDTO> oneShortLinkStats(ShortLinkStatsReqDTO requestParam) {
         String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats", BeanUtil.beanToMap(requestParam));
+        return JSON.parseObject(resultBodyStr, new TypeReference<>() {
+        });
+    }
+
+    default Result<IPage<ShortLinkStatsAccessRecordRespDTO>> shortLinkStatsAccessRecord(ShortLinkStatsAccessRecordReqDTO requestParam) {
+        Map<String, Object> stringObjectMap = BeanUtil.beanToMap(requestParam, false, true);
+        stringObjectMap.remove("orders");
+        stringObjectMap.remove("records");
+        String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats/access-record", stringObjectMap);
         return JSON.parseObject(resultBodyStr, new TypeReference<>() {
         });
     }
