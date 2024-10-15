@@ -17,5 +17,5 @@ public class ShortLinkPageReqDTO extends Page {
     /**
      * get order type
      */
-    private String orderByTag;
+    private String orderTag;
 }

@@ -1,7 +1,9 @@
 package com.chi.shortlink.project.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.chi.shortlink.project.dao.entity.ShortLinkDO;
+import com.chi.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
@@ -18,4 +20,11 @@ public interface ShortLinkMapper extends BaseMapper<ShortLinkDO> {
                         @Param("totalPv") int totalPv,
                         @Param("totalUv") int totalUv,
                         @Param("totalUip") int totalUip);
+
+    /**
+     * pagination statistics short link
+     * @param requestParam
+     * @return
+     */
+    IPage<ShortLinkDO> pageLink(ShortLinkPageReqDTO requestParam);
 }
