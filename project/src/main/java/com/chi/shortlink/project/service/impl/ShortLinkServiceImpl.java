@@ -79,15 +79,18 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
 
+    @Value("${short-link.domain.default}")
+    private String defaultDomain;
+
     @Override
     public Object createShortLink(ShortLinkCreateReqDTO requestParam) {
         String shortLinkSuffix = generateSuffix(requestParam);
-        String fullShortUrl = StrBuilder.create(requestParam.getDomain())
+        String fullShortUrl = StrBuilder.create(defaultDomain)
                 .append("/")
                 .append(shortLinkSuffix)
                 .toString();
         ShortLinkDO shortLinkDO = ShortLinkDO.builder()
-                .domain(requestParam.getDomain())
+                .domain(defaultDomain)
                 .originUrl(requestParam.getOriginUrl())
                 .gid(requestParam.getGid())
                 .createdType(requestParam.getCreatedType())
@@ -199,7 +202,12 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Override
     public void restoreUrl(String shortUri, ServletRequest request, ServletResponse response) {
         String serverName = request.getServerName();
-        String fullShortUrl = serverName + "/" + shortUri;
+        String serverPort = Optional.of(request.getServerPort())
+                .filter(each -> !Objects.equals(each, 80))
+                .map(String::valueOf)
+                .map(each -> ":" + each)
+                .orElse("");
+        String fullShortUrl = serverName + serverPort + "/" + shortUri;
         String originLink = stringRedisTemplate.opsForValue().get(String.format(GOTO_SHORT_LINK_KEY, fullShortUrl));
         // if redis cache hit, redirect to origin link
         if (StrUtil.isNotBlank(originLink)) {
