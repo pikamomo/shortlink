@@ -39,6 +39,7 @@ public class ShortLinkStatsServiceImpl implements ShortLinkStatsService {
         if (CollUtil.isEmpty(listStatsByShortLink)) {
             return null;
         }
+//        LinkAccessStatsDO pvUvUidStatsByShortLink = linkAccessLogsMapper.findPvUvUidStatsByShortLink(requestParam);
         // base data
         List<ShortLinkStatsAccessDailyRespDTO> daily = new ArrayList<>();
         List<String> rangeDates = DateUtil.rangeToList(DateUtil.parse(requestParam.getStartDate()), DateUtil.parse(requestParam.getEndDate()), DateField.DAY_OF_MONTH).stream()
@@ -153,6 +154,9 @@ public class ShortLinkStatsServiceImpl implements ShortLinkStatsService {
             deviceStats.add(deviceRespDTO);
         });
         return ShortLinkStatsRespDTO.builder()
+//                .pv(pvUvUidStatsByShortLink.getPv())
+//                .uv(pvUvUidStatsByShortLink.getUv())
+//                .uip(pvUvUidStatsByShortLink.getUip())
                 .daily(daily)
                 .localeCnStats(localeCnStats)
                 .hourStats(hourStats)
