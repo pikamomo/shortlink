@@ -1,17 +1,17 @@
--- 设置用户访问频率限制的参数
+-- Set parameters for user access frequency limit
 local username = KEYS[1]
-local timeWindow = tonumber(ARGV[1]) -- 时间窗口，单位：秒
+local timeWindow = tonumber(ARGV[1]) -- Time window, in seconds
 
--- 构造 Redis 中存储用户访问次数的键名
+-- Construct the key name for storing user access count in Redis
 local accessKey = "short-link:user-flow-risk-control:" .. username
 
--- 原子递增访问次数，并获取递增后的值
+-- Atomically increment the access count and get the incremented value
 local currentAccessCount = redis.call("INCR", accessKey)
 
--- 设置键的过期时间
+-- Set the key expiration time
 if currentAccessCount == 1 then
     redis.call("EXPIRE", accessKey, timeWindow)
 end
 
--- 返回当前访问次数
+-- Return the current access count
 return currentAccessCount

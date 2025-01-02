@@ -17,9 +17,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.nageoffer.shortlink.project.dao.mapper.ShortLinkMapper">
+<mapper namespace="com.chi.shortlink.project.dao.mapper.ShortLinkMapper">
 
-    <!-- 自增短链接访问次数 -->
+    <!-- Increment short link visit count -->
     <update id="incrementStats">
         UPDATE t_link
         SET total_pv  = total_pv + #{totalPv},
@@ -29,9 +29,9 @@
           AND full_short_url = #{fullShortUrl}
     </update>
 
-    <!-- 分页查询短链接 -->
-    <select id="pageLink" parameterType="com.nageoffer.shortlink.project.dto.req.ShortLinkPageReqDTO"
-            resultType="com.nageoffer.shortlink.project.dao.entity.ShortLinkDO">
+    <!-- Paginate query short links -->
+    <select id="pageLink" parameterType="com.chi.shortlink.project.dto.req.ShortLinkPageReqDTO"
+            resultType="com.chi.shortlink.project.dao.entity.ShortLinkDO">
         SELECT t.*,
         COALESCE(s.today_pv, 0) AS todayPv,
         COALESCE(s.today_uv, 0) AS todayUv,
@@ -67,10 +67,10 @@
         </choose>
     </select>
 
-    <!-- 分页统计回收站短链接 -->
+    <!-- Paginate query recycle bin short links -->
     <select id="pageRecycleBinLink"
-            parameterType="com.nageoffer.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO"
-            resultType="com.nageoffer.shortlink.project.dao.entity.ShortLinkDO">
+            parameterType="com.chi.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO"
+            resultType="com.chi.shortlink.project.dao.entity.ShortLinkDO">
         SELECT t.*,
         COALESCE(s.today_pv, 0) AS todayPv,
         COALESCE(s.today_uv, 0) AS todayUv,
