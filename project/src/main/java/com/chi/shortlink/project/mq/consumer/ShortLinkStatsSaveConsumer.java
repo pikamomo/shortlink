@@ -159,7 +159,7 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
                         .adcode(unknownFlag ? "Unknown" : localeResultObj.getString("adcode"))
                         .cnt(1)
                         .fullShortUrl(fullShortUrl)
-                        .country("China")
+                        .country("Local")
                         .date(currentDate)
                         .build();
                 linkLocaleStatsMapper.shortLinkLocaleState(linkLocaleStatsDO);
@@ -199,7 +199,7 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
                     .os(statsRecord.getOs())
                     .network(statsRecord.getNetwork())
                     .device(statsRecord.getDevice())
-                    .locale(StrUtil.join("-", "China", actualProvince, actualCity))
+                    .locale(StrUtil.join("-", "Local", actualProvince, actualCity))
                     .fullShortUrl(fullShortUrl)
                     .build();
             linkAccessLogsMapper.insert(linkAccessLogsDO);
