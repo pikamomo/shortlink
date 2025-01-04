@@ -109,8 +109,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO requestParam) {
-        // How many concurrent requests can the short link interface handle? How to test?
-        // For details, see: https://nageoffer.com/shortlink/question
         verificationWhitelist(requestParam.getOriginUrl());
         String shortLinkSuffix = generateSuffix(requestParam);
         String fullShortUrl = StrBuilder.create(createShortLinkDefaultDomain)
@@ -139,11 +137,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .gid(requestParam.getGid())
                 .build();
         try {
-            // How much data does the short link project have? How to solve massive data storage?
-            // For details, see: https://nageoffer.com/shortlink/question
             baseMapper.insert(shortLinkDO);
-            // How to consider the database sharding key for short links?
-            // For details, see: https://nageoffer.com/shortlink/question
             shortLinkGotoMapper.insert(linkGotoDO);
         } catch (DuplicateKeyException ex) {
             // First determine if it exists in the Bloom filter; if not, add it directly
@@ -152,15 +146,11 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             }
             throw new ServiceException(String.format("Short link: %s is duplicated", fullShortUrl));
         }
-        // How is short link cache preheating done in the project?
-        // For details, see: https://nageoffer.com/shortlink/question
         stringRedisTemplate.opsForValue().set(
                 String.format(GOTO_SHORT_LINK_KEY, fullShortUrl),
                 requestParam.getOriginUrl(),
                 LinkUtil.getLinkCacheValidTime(requestParam.getValidDate()), TimeUnit.MILLISECONDS
         );
-        // After deleting the short link, how to remove it from the Bloom filter?
-        // For details, see: https://nageoffer.com/shortlink/question
         shortUriCreateCachePenetrationBloomFilter.add(fullShortUrl);
         return ShortLinkCreateRespDTO.builder()
                 .fullShortUrl("http://" + shortLinkDO.getFullShortUrl())
@@ -173,8 +163,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     public ShortLinkCreateRespDTO createShortLinkByLock(ShortLinkCreateReqDTO requestParam) {
         verificationWhitelist(requestParam.getOriginUrl());
         String fullShortUrl;
-        // Why is the performance of Bloom filter far superior to distributed locks?
-        // For details, see: https://nageoffer.com/shortlink/question
         RLock lock = redissonClient.getLock(SHORT_LINK_CREATE_LOCK_KEY);
         lock.lock();
         try {
@@ -285,9 +273,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .build();
             baseMapper.update(shortLinkDO, updateWrapper);
         } else {
-            // Why do we add a gid to the monitoring table?
-            // If we don't add it, does that mean there's no read-write lock?
-            // For details, see: https://nageoffer.com/shortlink/question
             RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(String.format(LOCK_GID_UPDATE_KEY, requestParam.getFullShortUrl()));
             RLock rLock = readWriteLock.writeLock();
             rLock.lock();
@@ -332,8 +317,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 rLock.unlock();
             }
         }
-        // How to ensure consistency between short link cache and database?
-        // For details, see: https://nageoffer.com/shortlink/question
         if (!Objects.equals(hasShortLinkDO.getValidDateType(), requestParam.getValidDateType())
                 || !Objects.equals(hasShortLinkDO.getValidDate(), requestParam.getValidDate())
                 || !Objects.equals(hasShortLinkDO.getOriginUrl(), requestParam.getOriginUrl())) {
@@ -373,10 +356,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @SneakyThrows
     @Override
     public void restoreUrl(String shortUri, ServletRequest request, ServletResponse response) {
-        // How many concurrent requests can the short link interface handle? How to test?
-        // For details, see: https://nageoffer.com/shortlink/question
-        // How to explain in an interview how short link redirect is implemented?
-        // For details, see: https://nageoffer.com/shortlink/question
         String serverName = request.getServerName();
         String serverPort = Optional.of(request.getServerPort())
                 .filter(each -> !Objects.equals(each, 80))
@@ -496,8 +475,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     public void shortLinkStats(ShortLinkStatsRecordDTO statsRecord) {
         Map<String, String> producerMap = new HashMap<>();
         producerMap.put("statsRecord", JSON.toJSONString(statsRecord));
-        // Why choose RocketMQ as the message queue?
-        // For details, see: https://nageoffer.com/shortlink/question
         shortLinkStatsSaveProducer.send(producerMap);
     }
 
@@ -510,13 +487,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             }
             String originUrl = requestParam.getOriginUrl();
             originUrl += UUID.randomUUID().toString();
-            // How to solve collisions in short link hash algorithm?
-            // For details, see: https://nageoffer.com/shortlink/question
             shorUri = HashUtil.hashToBase62(originUrl);
-            // Why not use a Set structure to check if short links exist?
-            // For details, see: https://nageoffer.com/shortlink/question
-            // If the Bloom filter is down and all data inside is lost, how do you recover it?
-            // For details, see: https://nageoffer.com/shortlink/question
             if (!shortUriCreateCachePenetrationBloomFilter.contains(createShortLinkDefaultDomain + "/" + shorUri)) {
                 break;
             }
@@ -534,8 +505,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             }
             String originUrl = requestParam.getOriginUrl();
             originUrl += UUID.randomUUID().toString();
-            // How to solve collisions in short link hash algorithm?
-            // For details, see: https://nageoffer.com/shortlink/question
             shorUri = HashUtil.hashToBase62(originUrl);
             LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
                     .eq(ShortLinkDO::getGid, requestParam.getGid())

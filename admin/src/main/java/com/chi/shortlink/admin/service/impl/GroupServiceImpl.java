@@ -86,7 +86,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                     .eq(GroupDO::getDelFlag, 0);
             List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
             if (CollUtil.isNotEmpty(groupDOList) && groupDOList.size() == groupMaxNum) {
-                throw new ClientException(String.format("已超出最大分组数：%d", groupMaxNum));
+                throw new ClientException(String.format("exceed most limit ：%d", groupMaxNum));
             }
             int retryCount = 0;
             int maxRetries = 10;
