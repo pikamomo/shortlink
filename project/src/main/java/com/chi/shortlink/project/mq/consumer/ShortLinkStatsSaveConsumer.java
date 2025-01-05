@@ -26,25 +26,8 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.chi.shortlink.project.common.convention.exception.ServiceException;
-import com.chi.shortlink.project.dao.entity.LinkAccessLogsDO;
-import com.chi.shortlink.project.dao.entity.LinkAccessStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkBrowserStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkDeviceStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkLocaleStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkNetworkStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkOsStatsDO;
-import com.chi.shortlink.project.dao.entity.LinkStatsTodayDO;
-import com.chi.shortlink.project.dao.entity.ShortLinkGotoDO;
-import com.chi.shortlink.project.dao.mapper.LinkAccessLogsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkAccessStatsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkBrowserStatsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkDeviceStatsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkLocaleStatsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkNetworkStatsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkOsStatsMapper;
-import com.chi.shortlink.project.dao.mapper.LinkStatsTodayMapper;
-import com.chi.shortlink.project.dao.mapper.ShortLinkGotoMapper;
-import com.chi.shortlink.project.dao.mapper.ShortLinkMapper;
+import com.chi.shortlink.project.dao.entity.*;
+import com.chi.shortlink.project.dao.mapper.*;
 import com.chi.shortlink.project.dto.biz.ShortLinkStatsRecordDTO;
 import com.chi.shortlink.project.mq.idempotent.MessageQueueIdempotentHandler;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -90,8 +72,8 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
     private final StringRedisTemplate stringRedisTemplate;
     private final MessageQueueIdempotentHandler messageQueueIdempotentHandler;
 
-    @Value("${short-link.stats.locale.amap-key}")
-    private String statsLocaleAmapKey;
+//    @Value("${short-link.stats.locale.amap-key}")
+//    private String statsLocaleAmapKey;
 
     @Override
     public void onMessage(MapRecord<String, String, String> message) {
@@ -143,23 +125,22 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
                     .build();
             linkAccessStatsMapper.shortLinkStats(linkAccessStatsDO);
             Map<String, Object> localeParamMap = new HashMap<>();
-            localeParamMap.put("key", statsLocaleAmapKey);
-            localeParamMap.put("ip", statsRecord.getRemoteAddr());
-            String localeResultStr = HttpUtil.get(AMAP_REMOTE_URL, localeParamMap);
+//            localeParamMap.put("key", statsLocaleAmapKey);
+//            localeParamMap.put("ip", statsRecord.getRemoteAddr());
+            String localeResultStr = HttpUtil.get(AMAP_REMOTE_URL + statsRecord.getRemoteAddr() + "/json");
             JSONObject localeResultObj = JSON.parseObject(localeResultStr);
-            String infoCode = localeResultObj.getString("infocode");
-            String actualProvince = "Unknown";
+//            String infoCode = localeResultObj.getString("infocode");
+            String actualProvince ="Unknown";
             String actualCity = "Unknown";
-            if (StrUtil.isNotBlank(infoCode) && StrUtil.equals(infoCode, "10000")) {
-                String province = localeResultObj.getString("province");
-                boolean unknownFlag = StrUtil.equals(province, "[]");
+            String error = localeResultObj.getString("error");
+            if (!StrUtil.isNotBlank(error)) {
                 LinkLocaleStatsDO linkLocaleStatsDO = LinkLocaleStatsDO.builder()
-                        .province(actualProvince = unknownFlag ? actualProvince : province)
-                        .city(actualCity = unknownFlag ? actualCity : localeResultObj.getString("city"))
-                        .adcode(unknownFlag ? "Unknown" : localeResultObj.getString("adcode"))
+                        .province(StrUtil.isNotBlank(error) ? "Unknown":localeResultObj.getString("region"))
+                        .city(StrUtil.isNotBlank(error) ? "Unknown":localeResultObj.getString("city"))
+                        .adcode(StrUtil.isNotBlank(error) ? "Unknown":localeResultObj.getString("asn"))
                         .cnt(1)
                         .fullShortUrl(fullShortUrl)
-                        .country("Local")
+                        .country(StrUtil.isNotBlank(error) ? "Unknown":localeResultObj.getString("country_name"))
                         .date(currentDate)
                         .build();
                 linkLocaleStatsMapper.shortLinkLocaleState(linkLocaleStatsDO);
