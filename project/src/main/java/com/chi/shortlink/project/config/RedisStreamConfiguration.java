@@ -50,6 +50,7 @@ public class RedisStreamConfiguration {
     private final RedisConnectionFactory redisConnectionFactory;
     private final ShortLinkStatsSaveConsumer shortLinkStatsSaveConsumer;
 
+    // Define the thread pool for the consumer
     @Bean
     public ExecutorService asyncStreamConsumer() {
         AtomicInteger index = new AtomicInteger();
@@ -68,6 +69,7 @@ public class RedisStreamConfiguration {
         );
     }
 
+    // Define the subscription for the consumer
     @Bean
     public Subscription shortLinkStatsSaveConsumerSubscription(ExecutorService asyncStreamConsumer) {
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
