@@ -33,7 +33,7 @@ short-link:
       names: 'google'
       details:
         - google.com
-
+#test
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
