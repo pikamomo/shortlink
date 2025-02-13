@@ -29,10 +29,13 @@ short-link:
   #      amap-key: 824c511f0997586ea016f979fdb23087
   goto-domain:
     white-list:
-      enable: false
-      names: 'google'
+      enable: true
+      names: 'youtube, linkedin, leetcode, github'
       details:
-        - google.com
+        - youtube.com
+        - linkedin.com
+        - leetcode.com
+        - github.com
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
